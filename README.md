@@ -1,67 +1,120 @@
 # AWS Portfolio Ops
 
-Cloud-backed portfolio operations API for managing and serving public portfolio assets.
+Cloud-backed portfolio operations API for managing and serving public portfolio
+assets.
 
 **Status:** In active development (MIT portfolio project)  
 **Author:** [Dingchen (Barry) Yuan](https://github.com/Dingchen-Yuan)  
 **Live portfolio:** https://dingchen-yuan.github.io
 
----
-
 ## Overview
 
-A lightweight **ops gateway** behind a personal site: JWT-protected admin APIs for uploading résumé/PDF and project metadata; public read APIs for GitHub Pages. Primary cloud platform is **AWS** (S3, CloudFront, and related services).
+This repository is the operations gateway behind a personal portfolio. The
+current foundation provides a NestJS API, Prisma/PostgreSQL connectivity,
+containerized local development, CI, and Terraform for private S3 storage.
+JWT-protected administration and portfolio business APIs remain roadmap work.
 
-## Planned / target stack
+## Current stack
 
-| Layer | Technology |
-|--------|------------|
-| API | NestJS (TypeScript) |
-| Auth | JWT (admin routes) |
-| Data | PostgreSQL (RDS preferred) |
-| Storage / CDN | AWS S3 + CloudFront |
-| Containers | Docker |
-| CI/CD | GitHub Actions |
-| IaC | Terraform (S3 + IAM minimum) |
-| Observability | CloudWatch logs |
-| Consumer | GitHub Pages portfolio site |
+- NestJS 11 and TypeScript
+- Prisma 7 with PostgreSQL
+- Docker and Docker Compose
+- GitHub Actions
+- Terraform with the AWS provider
+- Jest and Supertest
 
-## Features (roadmap)
-
-- [x] Repository & architecture scaffold
-- [ ] JWT-protected admin upload / metadata APIs
-- [ ] PostgreSQL for project metadata
-- [ ] S3 object storage for PDFs / images
-- [ ] Public read-only JSON API for the portfolio site
-- [ ] Docker image for the API
-- [ ] GitHub Actions: lint → test → build
-- [ ] Terraform for core AWS resources
-- [ ] CloudWatch logging
-
-## Architecture (target)
+## Project structure
 
 ```text
-GitHub Pages ──GET──▶ Public API ──▶ PostgreSQL
-Admin UI/curl ──JWT──▶ Admin API ──▶ S3 (assets)
-                              └── CloudWatch
+src/                 NestJS application and shared Prisma module
+prisma/              Prisma schema
+test/                End-to-end tests
+infra/terraform/     S3 and IAM infrastructure
+.github/workflows/   Continuous integration
 ```
 
 ## Local development
 
-> Implementation is in progress. Commands below will apply once the NestJS app is added.
+Requirements: Node.js 24+, npm, and Docker.
 
 ```bash
-# coming soon
+cp .env.example .env
+npm install
+docker compose up -d db
+npm run prisma:generate
+npm run start:dev
+```
+
+The health endpoint is available at `GET http://localhost:3000/api/health`.
+
+Run the checks locally:
+
+```bash
+npm run prisma:validate
+npm run lint
+npm test
+npm run test:e2e
+npm run build
+```
+
+The end-to-end suite expects PostgreSQL to be available using `DATABASE_URL`.
+
+## Docker
+
+Build and run the API and PostgreSQL together:
+
+```bash
 docker compose up --build
 ```
 
-## Environment variables (planned)
+The API image uses a multi-stage build and runs as an unprivileged user.
 
-See `.env.example` once the API scaffold lands. Never commit AWS keys or JWT secrets.
+## Environment variables
 
-## CV / résumé blurb
+- `NODE_ENV`: `development`, `test`, or `production`
+- `PORT`: HTTP listen port, default `3000`
+- `DATABASE_URL`: PostgreSQL connection URL
 
-> Building a NestJS portfolio ops API with JWT, PostgreSQL, S3/CloudFront, Docker, GitHub Actions, and Terraform on AWS.
+Copy `.env.example` for local development. Never commit database passwords, AWS
+credentials, JWT secrets, or other production values.
+
+## AWS infrastructure
+
+The configuration in `infra/terraform` creates a private, versioned,
+server-side encrypted S3 bucket and a least-privilege IAM policy for future API
+asset access. It intentionally does not create IAM users, access keys,
+CloudFront, or RDS.
+
+```bash
+cd infra/terraform
+cp terraform.tfvars.example terraform.tfvars
+terraform init
+terraform plan
+```
+
+Review the plan before applying it. Terraform state and real variable files are
+ignored by Git.
+
+## Roadmap
+
+- [x] NestJS, Prisma, PostgreSQL, and test scaffold
+- [x] Docker image and local Compose environment
+- [x] GitHub Actions checks: Prisma, lint, test, and build
+- [x] Terraform foundation for private S3 and IAM
+- [ ] JWT-protected admin APIs
+- [ ] Project metadata schema and public read API
+- [ ] S3-backed PDF and image uploads
+- [ ] CloudFront distribution
+- [ ] RDS deployment
+- [ ] CloudWatch logging
+
+## Target architecture
+
+```text
+GitHub Pages ──GET──▶ Public API ──▶ PostgreSQL
+Admin UI/curl ──JWT──▶ Admin API ──▶ S3
+                              └──▶ CloudWatch
+```
 
 ## License
 

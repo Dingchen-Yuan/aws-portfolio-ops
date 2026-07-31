@@ -1,12 +1,16 @@
 node_modules/
 dist/
 build/
+src/generated/
 .env
 .env.*
 !.env.example
 coverage/
 .terraform/
 *.tfstate*
+*.tfvars
+!*.tfvars.example
+crash.log
 .DS_Store
 *.log
 .idea/
