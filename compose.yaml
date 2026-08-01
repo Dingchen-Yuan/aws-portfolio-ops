@@ -1,4 +1,16 @@
 services:
+  web:
+    build:
+      context: ./web
+      target: runtime
+      args:
+        VITE_API_BASE_URL: http://localhost:3000/api
+    ports:
+      - "8080:80"
+    depends_on:
+      - api
+    restart: unless-stopped
+
   api:
     build:
       context: .
@@ -7,6 +19,7 @@ services:
       NODE_ENV: production
       PORT: 3000
       DATABASE_URL: postgresql://portfolio:portfolio@db:5432/portfolio_ops?schema=public
+      CORS_ORIGINS: http://localhost:5173,http://localhost:8080
     ports:
       - "3000:3000"
     depends_on:

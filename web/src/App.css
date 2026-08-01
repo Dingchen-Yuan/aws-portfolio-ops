@@ -1,0 +1,73 @@
+.hero {
+  padding: clamp(4rem, 10vw, 8rem) 1.5rem;
+}
+
+.eyebrow {
+  color: var(--accent);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+
+.intro {
+  max-width: 42rem;
+  margin: 0 auto;
+  color: var(--text);
+  font-size: 1.1rem;
+}
+
+.status {
+  width: fit-content;
+  margin: 2rem auto 0;
+  padding: 0.55rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  text-transform: capitalize;
+}
+
+.status span {
+  display: inline-block;
+  width: 0.55rem;
+  height: 0.55rem;
+  margin-right: 0.45rem;
+  border-radius: 50%;
+  background: #d69e2e;
+}
+
+.status--online span {
+  background: #38a169;
+}
+
+.status--offline span {
+  background: #e53e3e;
+}
+
+.architecture {
+  padding: 0 1.5rem 5rem;
+}
+
+.architecture__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  max-width: 56rem;
+  margin: 1.5rem auto 0;
+}
+
+.architecture article {
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: var(--surface);
+}
+
+.architecture article p {
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 640px) {
+  .architecture__grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -8,4 +8,12 @@ export const environmentValidationSchema = Joi.object({
   DATABASE_URL: Joi.string()
     .uri({ scheme: ['postgresql', 'postgres'] })
     .required(),
+  CORS_ORIGINS: Joi.string()
+    .default('http://localhost:5173,http://localhost:8080')
+    .when('NODE_ENV', {
+      is: 'production',
+      then: Joi.string()
+        .pattern(/^(?!.*(?:^|,)\s*\*\s*(?:,|$)).*$/)
+        .message('CORS_ORIGINS cannot contain a wildcard in production'),
+    }),
 });

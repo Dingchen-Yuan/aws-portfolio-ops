@@ -8,6 +8,12 @@ async function bootstrap(): Promise<void> {
   const configService = app.get(ConfigService);
 
   app.enableShutdownHooks();
+  app.enableCors({
+    origin: configService
+      .getOrThrow<string>('CORS_ORIGINS')
+      .split(',')
+      .map((origin) => origin.trim()),
+  });
   app.setGlobalPrefix('api');
   app.useGlobalPipes(
     new ValidationPipe({
