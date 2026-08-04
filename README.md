@@ -10,10 +10,11 @@ assets.
 ## Overview
 
 This repository contains the public React portfolio and its operations API.
-The foundation provides a Vite frontend, NestJS API, Prisma/PostgreSQL
-connectivity, containerized local development, CI, and Terraform for private
-S3 and CloudFront delivery. JWT-protected administration and portfolio business
-APIs remain roadmap work.
+The foundation provides a Vite frontend that lists published projects, a NestJS
+API with health + public project read endpoints, Prisma/PostgreSQL connectivity,
+containerized local development (with migrate-on-start), CI, and Terraform for
+private S3 and CloudFront delivery. JWT-protected administration and S3 uploads
+remain roadmap work.
 
 ## Current stack
 
@@ -45,6 +46,8 @@ cp .env.example .env
 npm install
 docker compose up -d db
 npm run prisma:generate
+npm run prisma:migrate:dev
+npm run prisma:seed
 npm run start:dev
 ```
 
@@ -57,8 +60,11 @@ npm install
 npm run dev
 ```
 
-The web application is available at `http://localhost:5173`. The API health
-endpoint is available at `GET http://localhost:3000/api/health`.
+The web application is available at `http://localhost:5173`. Useful API routes:
+
+- `GET http://localhost:3000/api/health`
+- `GET http://localhost:3000/api/projects`
+- `GET http://localhost:3000/api/projects/:slug`
 
 Run the checks locally:
 
@@ -137,8 +143,10 @@ invalidates CloudFront.
 - [x] GitHub Actions checks for the API and web application
 - [x] Terraform foundation for private S3, CloudFront, IAM, and GitHub OIDC
 - [x] Automated frontend deployment workflow
+- [x] Project metadata schema and public read API
+- [x] Seed data + frontend published project list
+- [x] Database-aware health check and migrate-on-start Docker runtime
 - [ ] JWT-protected admin APIs
-- [ ] Project metadata schema and public read API
 - [ ] S3-backed PDF and image uploads
 - [ ] RDS deployment
 - [ ] CloudWatch logging
@@ -169,27 +177,26 @@ MIT
 
 ## 项目简介
 
-这个仓库同时包含 React 作品集前端脚手架和后台运维 API。目前已经具备 Vite
-前端、NestJS API、Prisma/PostgreSQL 数据库连接、容器化本地开发环境、持续
-集成，以及用于私有 S3 和 CloudFront 分发的 Terraform 配置。真正的作品集
-页面、项目数据接口、JWT 管理员认证和文件上传功能仍在后续开发计划中。
+这个仓库同时包含 React 作品集前端和后台运维 API。目前已经具备 Vite 前端
+（展示已发布项目）、NestJS 公开项目读取接口、Prisma/PostgreSQL、带自动
+migrate 的容器化本地开发、持续集成，以及用于私有 S3 和 CloudFront 分发的
+Terraform 配置。JWT 管理员认证和文件上传功能仍在后续开发计划中。
 
 ## 当前进度
 
 已经完成：
 
-- React 前端基础页面和 API 健康状态检测
-- NestJS 健康检查接口
-- Prisma 和本地 PostgreSQL 连接
-- 前端、API、数据库的 Docker Compose 环境
+- React 前端页面、API 健康状态检测和已发布项目列表
+- NestJS 健康检查（含数据库探测）与公开 Projects 读接口
+- Prisma、本地 PostgreSQL、seed 示例数据
+- 前端、API、数据库的 Docker Compose 环境（API 启动时 migrate）
 - 前后端自动检查、测试和构建
 - S3、CloudFront、IAM 和 GitHub OIDC 的 Terraform 配置
 - 前端自动部署工作流配置
 
 尚未完成：
 
-- 真正的个人作品集页面设计
-- `Project` 数据模型和项目查询接口
+- 更完整的作品集视觉设计与详情页
 - 管理员登录与 JWT 权限保护
 - 项目新增、修改和删除
 - 图片及 PDF 上传
@@ -243,6 +250,8 @@ cp .env.example .env
 npm install
 docker compose up -d db
 npm run prisma:generate
+npm run prisma:migrate:dev
+npm run prisma:seed
 npm run start:dev
 ```
 
@@ -255,8 +264,11 @@ npm install
 npm run dev
 ```
 
-前端地址是 `http://localhost:5173`，健康检查地址为
-`GET http://localhost:3000/api/health`。
+前端地址是 `http://localhost:5173`。常用接口：
+
+- `GET http://localhost:3000/api/health`
+- `GET http://localhost:3000/api/projects`
+- `GET http://localhost:3000/api/projects/:slug`
 
 在本地运行项目检查：
 
@@ -365,8 +377,10 @@ CloudFront。该流程只有在 AWS 资源已经创建并且 GitHub Variables �
 - [x] API 和前端的 GitHub Actions 检查
 - [x] 私有 S3、CloudFront、IAM 和 GitHub OIDC 的 Terraform 基础
 - [x] 自动化前端部署工作流
+- [x] 项目元数据模型和公开读取 API
+- [x] Seed 数据与前端项目列表
+- [x] 数据库健康检查与 Docker 启动时 migrate
 - [ ] JWT 管理员 API
-- [ ] 项目元数据模型和公开读取 API
 - [ ] 使用 S3 存储 PDF 和图片
 - [ ] RDS 部署
 - [ ] CloudWatch 日志

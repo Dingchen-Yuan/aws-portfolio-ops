@@ -29,6 +29,7 @@ describe('Health endpoint (e2e)', () => {
       .expect(({ body }: { body: unknown }) => {
         expect(body).toEqual({
           status: 'ok',
+          database: 'up',
           timestamp: expect.any(String) as string,
         });
       });

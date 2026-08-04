@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
-import { getApiHealth } from './api.ts'
+import { getApiHealth, listProjects, type ProjectSummary } from './api.ts'
 import './App.css'
 
 function App() {
   const [apiStatus, setApiStatus] = useState<
     'checking' | 'online' | 'offline'
   >('checking')
+  const [projects, setProjects] = useState<ProjectSummary[]>([])
+  const [projectsError, setProjectsError] = useState(false)
 
   useEffect(() => {
     const controller = new AbortController()
@@ -18,6 +20,19 @@ function App() {
         }
       })
 
+    listProjects(controller.signal)
+      .then((items) => {
+        if (!controller.signal.aborted) {
+          setProjects(items)
+          setProjectsError(false)
+        }
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) {
+          setProjectsError(true)
+        }
+      })
+
     return () => controller.abort()
   }, [])
 
@@ -25,15 +40,40 @@ function App() {
     <main>
       <section className="hero">
         <p className="eyebrow">AWS PORTFOLIO OPS</p>
-        <h1>Portfolio frontend foundation</h1>
+        <h1>Selected projects</h1>
         <p className="intro">
-          React presents the portfolio while NestJS, PostgreSQL, and AWS manage
-          its content and assets.
+          React presents published portfolio projects while NestJS, PostgreSQL,
+          and AWS manage content and delivery.
         </p>
         <div className={`status status--${apiStatus}`} role="status">
           <span aria-hidden="true" />
           API {apiStatus}
         </div>
+      </section>
+
+      <section className="projects" aria-labelledby="projects-title">
+        <h2 id="projects-title">Published work</h2>
+        {projectsError ? (
+          <p className="projects__empty">Unable to load projects from the API.</p>
+        ) : projects.length === 0 ? (
+          <p className="projects__empty">
+            No published projects yet. Seed the database to see sample entries.
+          </p>
+        ) : (
+          <div className="projects__grid">
+            {projects.map((project) => (
+              <article key={project.id}>
+                <h3>{project.title}</h3>
+                <p>{project.summary}</p>
+                <ul>
+                  {project.tags.map((tag) => (
+                    <li key={tag}>{tag}</li>
+                  ))}
+                </ul>
+              </article>
+            ))}
+          </div>
+        )}
       </section>
 
       <section className="architecture" aria-labelledby="architecture-title">

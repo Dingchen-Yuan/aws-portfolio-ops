@@ -43,10 +43,18 @@
   background: #e53e3e;
 }
 
+.projects,
 .architecture {
   padding: 0 1.5rem 5rem;
 }
 
+.projects__empty {
+  max-width: 36rem;
+  margin: 1.5rem auto 0;
+  color: var(--text);
+}
+
+.projects__grid,
 .architecture__grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -55,11 +63,41 @@
   margin: 1.5rem auto 0;
 }
 
+.projects__grid article,
 .architecture article {
   padding: 1.5rem;
   border: 1px solid var(--border);
   border-radius: 0.75rem;
   background: var(--surface);
+  text-align: left;
+}
+
+.projects__grid h3 {
+  margin: 0 0 0.75rem;
+  color: var(--text-h);
+  font-size: 1.15rem;
+}
+
+.projects__grid p {
+  margin: 0;
+  color: var(--text);
+}
+
+.projects__grid ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.projects__grid li {
+  padding: 0.2rem 0.55rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--accent);
+  font-size: 0.75rem;
 }
 
 .architecture article p {
@@ -67,6 +105,7 @@
 }
 
 @media (max-width: 640px) {
+  .projects__grid,
   .architecture__grid {
     grid-template-columns: 1fr;
   }
