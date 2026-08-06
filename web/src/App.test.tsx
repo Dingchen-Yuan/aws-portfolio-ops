@@ -1,50 +1,78 @@
-import { render, screen } from '@testing-library/react'
+import { cleanup, render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import App from './App'
 
-describe('App', () => {
-  afterEach(() => {
-    vi.unstubAllGlobals()
-  })
+function mockFetch() {
+  vi.stubGlobal(
+    'fetch',
+    vi.fn(async (input: RequestInfo | URL) => {
+      const url = String(input)
 
-  it('shows published projects when the API is healthy', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(async (input: RequestInfo | URL) => {
-        const url = String(input)
-
-        if (url.includes('/health')) {
-          return {
-            ok: true,
-            json: () =>
-              Promise.resolve({
-                status: 'ok',
-                database: 'up',
-                timestamp: new Date().toISOString(),
-              }),
-          }
-        }
-
+      if (url.includes('/health')) {
         return {
           ok: true,
           json: () =>
-            Promise.resolve([
-              {
-                id: '1',
-                slug: 'focusforge',
-                title: 'FocusForge',
-                summary: 'Cognitive training app',
-                tags: ['React', 'NestJS'],
-                coverImageUrl: null,
-                pdfUrl: null,
-                published: true,
-                sortOrder: 1,
-              },
-            ]),
+            Promise.resolve({
+              status: 'ok',
+              database: 'up',
+              timestamp: new Date().toISOString(),
+            }),
         }
-      }),
-    )
+      }
 
+      if (url.includes('/projects/focusforge')) {
+        return {
+          ok: true,
+          json: () =>
+            Promise.resolve({
+              id: '1',
+              slug: 'focusforge',
+              title: 'FocusForge',
+              summary: 'Cognitive training app',
+              description:
+                'Full-stack focus and memory training app with NestJS and React.',
+              tags: ['React', 'NestJS'],
+              coverImageUrl: 'https://example.cloudfront.net/cover.png',
+              pdfUrl: 'https://example.cloudfront.net/resume.pdf',
+              published: true,
+              sortOrder: 1,
+              createdAt: '2026-08-01T00:00:00.000Z',
+              updatedAt: '2026-08-01T00:00:00.000Z',
+            }),
+        }
+      }
+
+      return {
+        ok: true,
+        json: () =>
+          Promise.resolve([
+            {
+              id: '1',
+              slug: 'focusforge',
+              title: 'FocusForge',
+              summary: 'Cognitive training app',
+              tags: ['React', 'NestJS'],
+              coverImageUrl: 'https://example.cloudfront.net/cover.png',
+              pdfUrl: 'https://example.cloudfront.net/resume.pdf',
+              published: true,
+              sortOrder: 1,
+            },
+          ]),
+      }
+    }),
+  )
+}
+
+describe('App', () => {
+  afterEach(() => {
+    cleanup()
+    vi.unstubAllGlobals()
+    window.history.pushState({}, '', '/')
+  })
+
+  it('shows published projects with cover images on the home page', async () => {
+    mockFetch()
     render(<App />)
 
     expect(
@@ -53,5 +81,33 @@ describe('App', () => {
     expect(await screen.findByText(/api online/i)).toBeInTheDocument()
     expect(await screen.findByText('FocusForge')).toBeInTheDocument()
     expect(screen.getByText('Cognitive training app')).toBeInTheDocument()
+    expect(screen.getByAltText('FocusForge cover')).toHaveAttribute(
+      'src',
+      'https://example.cloudfront.net/cover.png',
+    )
+  })
+
+  it('opens a project detail page with description and PDF link', async () => {
+    const user = userEvent.setup()
+    mockFetch()
+    render(<App />)
+
+    await user.click(await screen.findByRole('link', { name: /focusforge/i }))
+
+    expect(
+      await screen.findByRole('heading', { level: 1, name: 'FocusForge' }),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        'Full-stack focus and memory training app with NestJS and React.',
+      ),
+    ).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /download pdf/i })).toHaveAttribute(
+      'href',
+      'https://example.cloudfront.net/resume.pdf',
+    )
+    expect(
+      screen.getByRole('link', { name: /back to projects/i }),
+    ).toBeInTheDocument()
   })
 })

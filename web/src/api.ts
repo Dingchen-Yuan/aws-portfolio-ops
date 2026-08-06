@@ -19,6 +19,12 @@ export interface ProjectSummary {
   sortOrder: number
 }
 
+export interface ProjectDetail extends ProjectSummary {
+  description: string
+  createdAt: string
+  updatedAt: string
+}
+
 export async function getApiHealth(
   signal?: AbortSignal,
 ): Promise<HealthResponse> {
@@ -41,4 +47,24 @@ export async function listProjects(
   }
 
   return (await response.json()) as ProjectSummary[]
+}
+
+export async function getProjectBySlug(
+  slug: string,
+  signal?: AbortSignal,
+): Promise<ProjectDetail> {
+  const response = await fetch(
+    `${API_BASE_URL}/projects/${encodeURIComponent(slug)}`,
+    { signal },
+  )
+
+  if (response.status === 404) {
+    throw new Error('Project not found')
+  }
+
+  if (!response.ok) {
+    throw new Error(`Project request failed with status ${response.status}`)
+  }
+
+  return (await response.json()) as ProjectDetail
 }

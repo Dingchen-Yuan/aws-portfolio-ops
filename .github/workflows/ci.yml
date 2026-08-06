@@ -64,6 +64,16 @@ jobs:
     env:
       NODE_ENV: test
       DATABASE_URL: postgresql://portfolio:portfolio@localhost:5432/portfolio_ops_test?schema=public
+      ADMIN_USERNAME: admin
+      ADMIN_PASSWORD: change-me-now
+      JWT_SECRET: replace-with-a-long-random-secret-key
+      JWT_EXPIRES_IN: 1d
+      AWS_REGION: ap-southeast-2
+      S3_ASSETS_BUCKET: aws-portfolio-ops-dev-assets-example
+      ASSETS_PUBLIC_BASE_URL: https://example.cloudfront.net
+      UPLOAD_URL_EXPIRES_IN: 300
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
 
     steps:
       - name: Check out repository

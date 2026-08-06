@@ -1,5 +1,5 @@
 .hero {
-  padding: clamp(4rem, 10vw, 8rem) 1.5rem;
+  padding: clamp(4rem, 10vw, 8rem) 1.5rem 3rem;
 }
 
 .eyebrow {
@@ -7,6 +7,7 @@
   font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.18em;
+  text-transform: uppercase;
 }
 
 .intro {
@@ -43,8 +44,7 @@
   background: #e53e3e;
 }
 
-.projects,
-.architecture {
+.projects {
   padding: 0 1.5rem 5rem;
 }
 
@@ -54,36 +54,78 @@
   color: var(--text);
 }
 
-.projects__grid,
-.architecture__grid {
+.projects__grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1rem;
-  max-width: 56rem;
+  max-width: 64rem;
   margin: 1.5rem auto 0;
 }
 
-.projects__grid article,
-.architecture article {
-  padding: 1.5rem;
+.project-card {
+  overflow: hidden;
   border: 1px solid var(--border);
-  border-radius: 0.75rem;
+  border-radius: 0.9rem;
   background: var(--surface);
   text-align: left;
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease;
 }
 
-.projects__grid h3 {
-  margin: 0 0 0.75rem;
+.project-card:hover,
+.project-card:focus-within {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.project-card__link {
+  display: grid;
+  color: inherit;
+  text-decoration: none;
+}
+
+.project-card__media {
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: #0a1424;
+}
+
+.project-card__media img,
+.project-card__placeholder {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.project-card__placeholder {
+  display: grid;
+  place-items: center;
+  color: var(--accent);
+  font-size: 2.5rem;
+  font-weight: 700;
+  background:
+    radial-gradient(circle at top right, rgba(98, 195, 255, 0.25), transparent 45%),
+    linear-gradient(160deg, #132038, #0b1526);
+}
+
+.project-card__body {
+  padding: 1.25rem 1.35rem 1.4rem;
+}
+
+.project-card__body h3 {
+  margin: 0 0 0.65rem;
   color: var(--text-h);
   font-size: 1.15rem;
 }
 
-.projects__grid p {
+.project-card__body p {
   margin: 0;
   color: var(--text);
 }
 
-.projects__grid ul {
+.project-card__body ul,
+.detail__tags {
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
@@ -92,7 +134,8 @@
   list-style: none;
 }
 
-.projects__grid li {
+.project-card__body li,
+.detail__tags li {
   padding: 0.2rem 0.55rem;
   border: 1px solid var(--border);
   border-radius: 999px;
@@ -100,13 +143,88 @@
   font-size: 0.75rem;
 }
 
-.architecture article p {
-  margin-top: 0.5rem;
+.project-card__cta {
+  display: inline-block;
+  margin-top: 1rem;
+  color: var(--text-h);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.detail {
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 5rem;
+  text-align: left;
+}
+
+.detail__back {
+  margin-bottom: 1.5rem;
+}
+
+.detail__back a,
+.detail__actions a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.detail__back a:hover,
+.detail__actions a:hover {
+  text-decoration: underline;
+}
+
+.detail__panel {
+  padding: 0;
+}
+
+.detail__panel h1 {
+  margin: 0.75rem 0 1rem;
+  text-align: left;
+  font-size: clamp(2rem, 6vw, 3.4rem);
+}
+
+.detail__panel .intro {
+  margin: 0;
+  text-align: left;
+}
+
+.detail__cover {
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: var(--surface);
+}
+
+.detail__cover img {
+  display: block;
+  width: 100%;
+  max-height: 24rem;
+  object-fit: cover;
+}
+
+.detail__body {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.75rem;
+  color: var(--text);
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.detail__actions {
+  margin-top: 2rem;
+}
+
+@media (max-width: 900px) {
+  .projects__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 640px) {
-  .projects__grid,
-  .architecture__grid {
+  .projects__grid {
     grid-template-columns: 1fr;
   }
 }

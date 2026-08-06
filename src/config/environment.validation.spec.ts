@@ -4,6 +4,11 @@ const validEnvironment = {
   NODE_ENV: 'production',
   PORT: 3000,
   DATABASE_URL: 'postgresql://user:password@localhost:5432/portfolio',
+  ADMIN_USERNAME: 'admin',
+  ADMIN_PASSWORD: 'change-me-now',
+  JWT_SECRET: 'replace-with-a-long-random-secret-key',
+  S3_ASSETS_BUCKET: 'aws-portfolio-ops-dev-assets-example',
+  ASSETS_PUBLIC_BASE_URL: 'https://example.cloudfront.net',
 };
 
 describe('environmentValidationSchema', () => {

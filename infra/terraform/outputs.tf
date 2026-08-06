@@ -13,6 +13,16 @@ output "assets_access_policy_arn" {
   value       = aws_iam_policy.assets_access.arn
 }
 
+output "assets_distribution_id" {
+  description = "ID of the CloudFront distribution serving portfolio assets."
+  value       = aws_cloudfront_distribution.assets.id
+}
+
+output "assets_cdn_url" {
+  description = "HTTPS base URL for publicly readable portfolio assets."
+  value       = "https://${aws_cloudfront_distribution.assets.domain_name}"
+}
+
 output "web_bucket_name" {
   description = "Name of the private bucket containing the built React application."
   value       = aws_s3_bucket.web.id

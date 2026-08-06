@@ -16,4 +16,14 @@ export const environmentValidationSchema = Joi.object({
         .pattern(/^(?!.*(?:^|,)\s*\*\s*(?:,|$)).*$/)
         .message('CORS_ORIGINS cannot contain a wildcard in production'),
     }),
+  ADMIN_USERNAME: Joi.string().min(3).required(),
+  ADMIN_PASSWORD: Joi.string().min(8).required(),
+  JWT_SECRET: Joi.string().min(32).required(),
+  JWT_EXPIRES_IN: Joi.string().default('1d'),
+  AWS_REGION: Joi.string().default('ap-southeast-2'),
+  S3_ASSETS_BUCKET: Joi.string().min(3).required(),
+  ASSETS_PUBLIC_BASE_URL: Joi.string()
+    .uri({ scheme: ['https', 'http'] })
+    .required(),
+  UPLOAD_URL_EXPIRES_IN: Joi.number().integer().min(60).max(3600).default(300),
 });
