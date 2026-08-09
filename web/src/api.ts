@@ -1,6 +1,8 @@
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000/api'
 
+const ADMIN_TOKEN_KEY = 'portfolio-ops-admin-token'
+
 interface HealthResponse {
   status: 'ok'
   database: 'up'
@@ -23,6 +25,24 @@ export interface ProjectDetail extends ProjectSummary {
   description: string
   createdAt: string
   updatedAt: string
+}
+
+export interface LoginResponse {
+  accessToken: string
+  tokenType: 'Bearer'
+  expiresIn: string
+}
+
+export function getAdminToken(): string | null {
+  return sessionStorage.getItem(ADMIN_TOKEN_KEY)
+}
+
+export function setAdminToken(token: string): void {
+  sessionStorage.setItem(ADMIN_TOKEN_KEY, token)
+}
+
+export function clearAdminToken(): void {
+  sessionStorage.removeItem(ADMIN_TOKEN_KEY)
 }
 
 export async function getApiHealth(
@@ -67,4 +87,78 @@ export async function getProjectBySlug(
   }
 
   return (await response.json()) as ProjectDetail
+}
+
+export async function login(
+  username: string,
+  password: string,
+): Promise<LoginResponse> {
+  const response = await fetch(`${API_BASE_URL}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password }),
+  })
+
+  if (!response.ok) {
+    throw new Error(
+      response.status === 401
+        ? 'Invalid username or password.'
+        : `Login failed with status ${response.status}`,
+    )
+  }
+
+  return (await response.json()) as LoginResponse
+}
+
+export async function listAdminProjects(
+  signal?: AbortSignal,
+): Promise<ProjectDetail[]> {
+  const response = await authorizedFetch('/admin/projects', { signal })
+
+  if (response.status === 401) {
+    clearAdminToken()
+    throw new Error('Session expired. Sign in again.')
+  }
+
+  if (!response.ok) {
+    throw new Error(`Admin projects request failed with status ${response.status}`)
+  }
+
+  return (await response.json()) as ProjectDetail[]
+}
+
+export async function updateAdminProject(
+  id: string,
+  patch: { published: boolean },
+): Promise<ProjectDetail> {
+  const response = await authorizedFetch(`/admin/projects/${encodeURIComponent(id)}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(patch),
+  })
+
+  if (response.status === 401) {
+    clearAdminToken()
+    throw new Error('Session expired. Sign in again.')
+  }
+
+  if (!response.ok) {
+    throw new Error(`Project update failed with status ${response.status}`)
+  }
+
+  return (await response.json()) as ProjectDetail
+}
+
+async function authorizedFetch(path: string, init: RequestInit = {}) {
+  const token = getAdminToken()
+  const headers = new Headers(init.headers)
+
+  if (token) {
+    headers.set('Authorization', `Bearer ${token}`)
+  }
+
+  return fetch(`${API_BASE_URL}${path}`, {
+    ...init,
+    headers,
+  })
 }

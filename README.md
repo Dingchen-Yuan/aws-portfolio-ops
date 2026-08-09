@@ -64,6 +64,10 @@ The web application is available at `http://localhost:5173`. Useful API routes:
 - `GET http://localhost:3000/api/health`
 - `GET http://localhost:3000/api/projects`
 - `GET http://localhost:3000/api/projects/:slug`
+- `POST http://localhost:3000/api/auth/login`
+
+Admin UI: `http://localhost:5173/admin/login` (uses `ADMIN_USERNAME` /
+`ADMIN_PASSWORD` from the API `.env`).
 
 Run the checks locally:
 
@@ -167,6 +171,7 @@ invalidates CloudFront.
 - [x] JWT admin login and protected `/api/admin/me`
 - [x] Admin project create, update, and delete APIs
 - [x] S3-backed PDF and image uploads (presigned URLs)
+- [x] Admin UI (login + project publish toggle)
 - [ ] RDS deployment
 - [ ] CloudWatch logging
 
@@ -421,6 +426,7 @@ CloudFront。该流程只有在 AWS 资源已经创建并且 GitHub Variables �
 - [x] JWT 管理员登录与受保护的 `/api/admin/me`
 - [x] 管理端项目新增、修改和删除接口
 - [x] S3 预签名上传（封面图和 PDF）
+- [x] 管理端 UI（登录 + 项目发布开关）
 - [ ] RDS 部署
 - [ ] CloudWatch 日志
 
