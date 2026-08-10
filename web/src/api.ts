@@ -149,6 +149,52 @@ export async function updateAdminProject(
   return (await response.json()) as ProjectDetail
 }
 
+export interface CreateAdminProjectInput {
+  slug: string
+  title: string
+  summary: string
+  description: string
+  tags?: string[]
+  published?: boolean
+}
+
+export async function createAdminProject(
+  input: CreateAdminProjectInput,
+): Promise<ProjectDetail> {
+  const response = await authorizedFetch('/admin/projects', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(input),
+  })
+
+  if (response.status === 401) {
+    clearAdminToken()
+    throw new Error('Session expired. Sign in again.')
+  }
+
+  if (!response.ok) {
+    throw new Error(`Project create failed with status ${response.status}`)
+  }
+
+  return (await response.json()) as ProjectDetail
+}
+
+export async function deleteAdminProject(id: string): Promise<void> {
+  const response = await authorizedFetch(
+    `/admin/projects/${encodeURIComponent(id)}`,
+    { method: 'DELETE' },
+  )
+
+  if (response.status === 401) {
+    clearAdminToken()
+    throw new Error('Session expired. Sign in again.')
+  }
+
+  if (!response.ok) {
+    throw new Error(`Project delete failed with status ${response.status}`)
+  }
+}
+
 async function authorizedFetch(path: string, init: RequestInit = {}) {
   const token = getAdminToken()
   const headers = new Headers(init.headers)

@@ -22,6 +22,35 @@ function mockFetch() {
         }
       }
 
+      if (url.includes('/admin/projects/') && method === 'DELETE') {
+        return {
+          ok: true,
+          json: async () => null,
+        }
+      }
+
+      if (url.includes('/admin/projects') && method === 'POST') {
+        return {
+          ok: true,
+          json: () =>
+            Promise.resolve({
+              id: '2',
+              slug: 'new-project',
+              title: 'New Project',
+              summary: 'Created from admin UI for testing.',
+              description:
+                'A longer description that satisfies the create validation rules.',
+              tags: ['React'],
+              coverImageUrl: null,
+              pdfUrl: null,
+              published: false,
+              sortOrder: 0,
+              createdAt: '2026-08-10T00:00:00.000Z',
+              updatedAt: '2026-08-10T00:00:00.000Z',
+            }),
+        }
+      }
+
       if (url.includes('/admin/projects/') && method === 'PATCH') {
         return {
           ok: true,
@@ -192,5 +221,32 @@ describe('App', () => {
 
     await user.click(screen.getByRole('button', { name: /unpublish/i }))
     expect(await screen.findByRole('button', { name: /publish/i })).toBeInTheDocument()
+  })
+
+  it('creates a project from the admin form', async () => {
+    const user = userEvent.setup()
+    mockFetch()
+    sessionStorage.setItem('portfolio-ops-admin-token', 'test-token')
+    window.history.pushState({}, '', '/admin')
+    render(<App />)
+
+    expect(
+      await screen.findByRole('heading', { name: /new project/i }),
+    ).toBeInTheDocument()
+
+    await user.type(screen.getByLabelText(/^slug$/i), 'new-project')
+    await user.type(screen.getByLabelText(/^title$/i), 'New Project')
+    await user.type(
+      screen.getByLabelText(/^summary$/i),
+      'Created from admin UI for testing.',
+    )
+    await user.type(
+      screen.getByLabelText(/^description$/i),
+      'A longer description that satisfies the create validation rules.',
+    )
+    await user.click(screen.getByRole('button', { name: /create project/i }))
+
+    expect(await screen.findByText('New Project')).toBeInTheDocument()
+    expect(screen.getByText('new-project')).toBeInTheDocument()
   })
 })

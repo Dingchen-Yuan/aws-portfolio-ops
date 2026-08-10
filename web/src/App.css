@@ -272,6 +272,49 @@
   font-weight: 700;
 }
 
+.admin__form textarea {
+  border: 1px solid var(--border);
+  border-radius: 0.55rem;
+  background: var(--surface);
+  color: inherit;
+  padding: 0.75rem 0.9rem;
+  resize: vertical;
+  font: inherit;
+}
+
+.admin__form--create {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.admin__form--create h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.25rem;
+}
+
+.admin__checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-weight: 600;
+}
+
+.admin__checkbox input {
+  width: auto;
+  padding: 0;
+}
+
+.admin__row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.admin__danger {
+  background: #c53030 !important;
+}
+
 .admin__form button:disabled,
 .admin__list button:disabled {
   cursor: wait;
