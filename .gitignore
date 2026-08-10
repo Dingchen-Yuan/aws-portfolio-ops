@@ -11,6 +11,8 @@ coverage/
 *.tfstate*
 *.tfvars
 !*.tfvars.example
+*.tfplan
+tfplan
 crash.log
 .DS_Store
 *.log
