@@ -131,6 +131,27 @@ function mockFetch() {
         }
       }
 
+      if (url.includes('/projects/aws-portfolio-ops')) {
+        return {
+          ok: true,
+          json: () =>
+            Promise.resolve({
+              id: '2',
+              slug: 'aws-portfolio-ops',
+              title: 'AWS Portfolio Ops',
+              summary: 'Portfolio operations API',
+              description: 'NestJS portfolio ops with S3 uploads and admin UI.',
+              tags: ['NestJS', 'AWS'],
+              coverImageUrl: null,
+              pdfUrl: null,
+              published: true,
+              sortOrder: 2,
+              createdAt: '2026-08-01T00:00:00.000Z',
+              updatedAt: '2026-08-01T00:00:00.000Z',
+            }),
+        }
+      }
+
       return {
         ok: true,
         json: () =>
@@ -145,6 +166,17 @@ function mockFetch() {
               pdfUrl: 'https://example.cloudfront.net/resume.pdf',
               published: true,
               sortOrder: 1,
+            },
+            {
+              id: '2',
+              slug: 'aws-portfolio-ops',
+              title: 'AWS Portfolio Ops',
+              summary: 'Portfolio operations API',
+              tags: ['NestJS', 'AWS'],
+              coverImageUrl: null,
+              pdfUrl: null,
+              published: true,
+              sortOrder: 2,
             },
           ]),
       }
@@ -174,6 +206,22 @@ describe('App', () => {
       'src',
       'https://example.cloudfront.net/cover.png',
     )
+  })
+
+  it('filters the home page project list by tag', async () => {
+    const user = userEvent.setup()
+    mockFetch()
+    render(<App />)
+
+    expect(await screen.findByText('FocusForge')).toBeInTheDocument()
+    expect(screen.getByText('AWS Portfolio Ops')).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /^react$/i }))
+    expect(screen.getByText('FocusForge')).toBeInTheDocument()
+    expect(screen.queryByText('AWS Portfolio Ops')).not.toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /^all$/i }))
+    expect(screen.getByText('AWS Portfolio Ops')).toBeInTheDocument()
   })
 
   it('opens a project detail page with description and PDF link', async () => {
