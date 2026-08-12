@@ -48,6 +48,35 @@
   padding: 0 1.5rem 5rem;
 }
 
+.projects__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  max-width: 64rem;
+  margin: 1.25rem auto 0;
+}
+
+.projects__filter {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.45rem 0.85rem;
+  background: var(--surface);
+  color: inherit;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.projects__filter:hover {
+  border-color: var(--accent);
+}
+
+.projects__filter--active {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
 .projects__empty {
   max-width: 36rem;
   margin: 1.5rem auto 0;

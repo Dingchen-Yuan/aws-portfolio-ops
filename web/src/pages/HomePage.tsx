@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { getApiHealth, listProjects, type ProjectSummary } from '../api.ts'
 import { ProjectCard } from '../components/ProjectCard.tsx'
 
@@ -8,6 +8,7 @@ export function HomePage() {
   >('checking')
   const [projects, setProjects] = useState<ProjectSummary[]>([])
   const [projectsError, setProjectsError] = useState(false)
+  const [selectedTag, setSelectedTag] = useState<string | null>(null)
 
   useEffect(() => {
     const controller = new AbortController()
@@ -36,6 +37,23 @@ export function HomePage() {
     return () => controller.abort()
   }, [])
 
+  const tags = useMemo(() => {
+    const unique = new Set<string>()
+    for (const project of projects) {
+      for (const tag of project.tags) {
+        unique.add(tag)
+      }
+    }
+    return [...unique].sort((a, b) => a.localeCompare(b))
+  }, [projects])
+
+  const visibleProjects = useMemo(() => {
+    if (!selectedTag) {
+      return projects
+    }
+    return projects.filter((project) => project.tags.includes(selectedTag))
+  }, [projects, selectedTag])
+
   return (
     <main>
       <section className="hero">
@@ -53,6 +71,43 @@ export function HomePage() {
 
       <section className="projects" aria-labelledby="projects-title">
         <h2 id="projects-title">Published work</h2>
+        {tags.length > 0 && (
+          <div
+            aria-label="Filter projects by tag"
+            className="projects__filters"
+            role="group"
+          >
+            <button
+              aria-pressed={selectedTag === null}
+              className={
+                selectedTag === null
+                  ? 'projects__filter projects__filter--active'
+                  : 'projects__filter'
+              }
+              onClick={() => setSelectedTag(null)}
+              type="button"
+            >
+              All
+            </button>
+            {tags.map((tag) => (
+              <button
+                aria-pressed={selectedTag === tag}
+                className={
+                  selectedTag === tag
+                    ? 'projects__filter projects__filter--active'
+                    : 'projects__filter'
+                }
+                key={tag}
+                onClick={() =>
+                  setSelectedTag((current) => (current === tag ? null : tag))
+                }
+                type="button"
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
+        )}
         {projectsError ? (
           <p className="projects__empty">
             Unable to load projects from the API.
@@ -61,9 +116,13 @@ export function HomePage() {
           <p className="projects__empty">
             No published projects yet. Seed the database to see sample entries.
           </p>
+        ) : visibleProjects.length === 0 ? (
+          <p className="projects__empty">
+            No projects match the “{selectedTag}” tag.
+          </p>
         ) : (
           <div className="projects__grid">
-            {projects.map((project) => (
+            {visibleProjects.map((project) => (
               <ProjectCard key={project.id} project={project} />
             ))}
           </div>
