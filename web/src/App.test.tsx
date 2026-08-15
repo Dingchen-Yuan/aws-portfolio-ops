@@ -224,6 +224,19 @@ describe('App', () => {
     expect(screen.getByText('AWS Portfolio Ops')).toBeInTheDocument()
   })
 
+  it('filters the home page project list by search query', async () => {
+    const user = userEvent.setup()
+    mockFetch()
+    render(<App />)
+
+    expect(await screen.findByText('FocusForge')).toBeInTheDocument()
+    expect(screen.getByText('AWS Portfolio Ops')).toBeInTheDocument()
+
+    await user.type(screen.getByLabelText(/search projects/i), 'portfolio')
+    expect(screen.getByText('AWS Portfolio Ops')).toBeInTheDocument()
+    expect(screen.queryByText('FocusForge')).not.toBeInTheDocument()
+  })
+
   it('opens a project detail page with description and PDF link', async () => {
     const user = userEvent.setup()
     mockFetch()

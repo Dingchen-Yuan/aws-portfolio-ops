@@ -173,6 +173,7 @@ invalidates CloudFront.
 - [x] S3-backed PDF and image uploads (presigned URLs)
 - [x] Admin UI (login + project publish toggle)
 - [x] Public homepage tag filters
+- [x] Public homepage project search
 - [ ] RDS deployment
 - [ ] CloudWatch logging
 
@@ -429,6 +430,7 @@ CloudFront。该流程只有在 AWS 资源已经创建并且 GitHub Variables �
 - [x] S3 预签名上传（封面图和 PDF）
 - [x] 管理端 UI（登录 + 项目发布开关）
 - [x] 公开首页按标签筛选
+- [x] 公开首页项目搜索
 - [ ] RDS 部署
 - [ ] CloudWatch 日志
 
