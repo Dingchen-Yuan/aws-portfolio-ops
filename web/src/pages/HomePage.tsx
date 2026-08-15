@@ -9,6 +9,7 @@ export function HomePage() {
   const [projects, setProjects] = useState<ProjectSummary[]>([])
   const [projectsError, setProjectsError] = useState(false)
   const [selectedTag, setSelectedTag] = useState<string | null>(null)
+  const [searchQuery, setSearchQuery] = useState('')
 
   useEffect(() => {
     const controller = new AbortController()
@@ -48,11 +49,28 @@ export function HomePage() {
   }, [projects])
 
   const visibleProjects = useMemo(() => {
-    if (!selectedTag) {
-      return projects
-    }
-    return projects.filter((project) => project.tags.includes(selectedTag))
-  }, [projects, selectedTag])
+    const query = searchQuery.trim().toLowerCase()
+
+    return projects.filter((project) => {
+      if (selectedTag && !project.tags.includes(selectedTag)) {
+        return false
+      }
+
+      if (!query) {
+        return true
+      }
+
+      const haystack = [
+        project.title,
+        project.summary,
+        project.slug,
+        ...project.tags,
+      ]
+        .join(' ')
+        .toLowerCase()
+      return haystack.includes(query)
+    })
+  }, [projects, searchQuery, selectedTag])
 
   return (
     <main>
@@ -71,6 +89,17 @@ export function HomePage() {
 
       <section className="projects" aria-labelledby="projects-title">
         <h2 id="projects-title">Published work</h2>
+        <label className="projects__search-label" htmlFor="project-search">
+          Search projects
+        </label>
+        <input
+          className="projects__search"
+          id="project-search"
+          onChange={(event) => setSearchQuery(event.target.value)}
+          placeholder="Search by title, summary, or tag…"
+          type="search"
+          value={searchQuery}
+        />
         {tags.length > 0 && (
           <div
             aria-label="Filter projects by tag"
@@ -118,7 +147,9 @@ export function HomePage() {
           </p>
         ) : visibleProjects.length === 0 ? (
           <p className="projects__empty">
-            No projects match the “{selectedTag}” tag.
+            {searchQuery.trim()
+              ? `No projects match “${searchQuery.trim()}”.`
+              : `No projects match the “${selectedTag}” tag.`}
           </p>
         ) : (
           <div className="projects__grid">
