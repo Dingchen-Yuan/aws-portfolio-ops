@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from '../router.tsx'
 import { getProjectBySlug, type ProjectDetail } from '../api.ts'
+import { copyText, projectShareUrl } from '../copyText.ts'
 
 type LoadState =
   | { status: 'loading' }
@@ -9,6 +10,9 @@ type LoadState =
 
 export function ProjectDetailPage({ slug }: { slug: string }) {
   const [state, setState] = useState<LoadState>({ status: 'loading' })
+  const [copyStatus, setCopyStatus] = useState<'idle' | 'copied' | 'error'>(
+    'idle',
+  )
 
   useEffect(() => {
     const controller = new AbortController()
@@ -80,13 +84,34 @@ export function ProjectDetailPage({ slug }: { slug: string }) {
               ))}
           </div>
 
-          {state.project.pdfUrl ? (
-            <p className="detail__actions">
+          <p className="detail__actions">
+            <button
+              className="detail__copy"
+              onClick={() => {
+                void copyText(projectShareUrl(state.project.slug))
+                  .then(() => {
+                    setCopyStatus('copied')
+                    window.setTimeout(() => setCopyStatus('idle'), 2000)
+                  })
+                  .catch(() => {
+                    setCopyStatus('error')
+                    window.setTimeout(() => setCopyStatus('idle'), 2500)
+                  })
+              }}
+              type="button"
+            >
+              {copyStatus === 'copied'
+                ? 'Copied'
+                : copyStatus === 'error'
+                  ? 'Copy failed'
+                  : 'Copy link'}
+            </button>
+            {state.project.pdfUrl ? (
               <a href={state.project.pdfUrl} target="_blank" rel="noreferrer">
                 Download PDF
               </a>
-            </p>
-          ) : null}
+            ) : null}
+          </p>
         </article>
       ) : null}
     </main>

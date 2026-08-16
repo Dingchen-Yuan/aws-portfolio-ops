@@ -174,6 +174,7 @@ invalidates CloudFront.
 - [x] Admin UI (login + project publish toggle)
 - [x] Public homepage tag filters
 - [x] Public homepage project search
+- [x] Copy project detail link
 - [ ] RDS deployment
 - [ ] CloudWatch logging
 
@@ -431,6 +432,7 @@ CloudFront。该流程只有在 AWS 资源已经创建并且 GitHub Variables �
 - [x] 管理端 UI（登录 + 项目发布开关）
 - [x] 公开首页按标签筛选
 - [x] 公开首页项目搜索
+- [x] 复制项目详情页链接
 - [ ] RDS 部署
 - [ ] CloudWatch 日志
 

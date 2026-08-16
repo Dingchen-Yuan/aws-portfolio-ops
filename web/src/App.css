@@ -264,7 +264,21 @@
 }
 
 .detail__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
   margin-top: 2rem;
+}
+
+.detail__copy {
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  padding: 0.55rem 0.95rem;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  font-weight: 700;
 }
 
 .admin {
