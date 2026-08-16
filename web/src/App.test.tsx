@@ -261,6 +261,27 @@ describe('App', () => {
     ).toBeInTheDocument()
   })
 
+  it('copies the project detail URL', async () => {
+    const user = userEvent.setup()
+    const writeText = vi.fn().mockResolvedValue(undefined)
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: { writeText },
+    })
+    mockFetch()
+    render(<App />)
+
+    await user.click(await screen.findByRole('link', { name: /focusforge/i }))
+    await user.click(await screen.findByRole('button', { name: /copy link/i }))
+
+    expect(writeText).toHaveBeenCalledWith(
+      `${window.location.origin}/projects/focusforge`,
+    )
+    expect(
+      await screen.findByRole('button', { name: /copied/i }),
+    ).toBeInTheDocument()
+  })
+
   it('signs into admin and toggles project publish state', async () => {
     const user = userEvent.setup()
     mockFetch()
